@@ -1,12 +1,13 @@
 import React from 'react';
-import ReactTimeout from 'react-timeout'
+import ReactTimeout from 'react-timeout';
+import './ImageLinkForm.css'
 
 class ImageLinkForm extends React.Component{
 
 	//props.onIsImageInput, props.onImageUrlChange
 	//props.onDoesImageUrlWork
 	constructor(props){
-		super();
+		super(props);
 		this.state = {
 			imageUrlInput: ''
 		}
@@ -53,17 +54,22 @@ class ImageLinkForm extends React.Component{
 
 	render(){
 		return(
-			<div className="flex justify-center">
-				<input 
-					onChange={this.onImageUrlInput}
-					type="text" id="imageUrl" name="imageUrl"/>		
-				<button 
-					onClick={this.onClickDetect}
-					type="button">Detect</button>
+			<div>
+				<p id="imageLinkDescription" className="mt2 mb4 tc f2 i washed-red"> Enter an image link and detect faces in the image </p>
+				<div id="imageLinkForm" className="mw7 ph4 pv3 pa4-ns br4 flex justify-center center">
+					<input 
+						className="ma1 pa2 w-75"
+						onChange={this.onImageUrlInput}
+						placeholder="http://huangshiwei.me/myLife/photos/IMG_004.jpg" 
+						type="text" id="imageUrl" name="imageUrl"/>		
+					<button 
+						className="ma1 pa2 bg-light-blue link hover-bg-orange pointer"
+						onClick={this.onClickDetect}
+						type="button">Detect</button>
+				</div>
 			</div>
 		);		
 	}
 }
-
 
 export default ImageLinkForm;
