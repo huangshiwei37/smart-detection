@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Nav from '../components/Nav/Nav';
 import SignInForm from '../components/SignInForm/SignInForm';
+import SignUp from '../components/SignUp/SignUp';
 import Rank from '../components/Rank/Rank';
 import ImageLinkForm from '../components/ImageLinkForm/ImageLinkForm';
 import ImageBox from '../components/ImageBox/ImageBox';
@@ -16,9 +17,10 @@ class App extends Component {
 			isSignedIn: false,
 			user: {
 				id: '',
-				name: 'Shiwei',
-				email: 'huangshiwei37@gmail.com',
-				rank: 0
+				name: '',
+				email: '',
+				rank: 0,
+        entries: 0
 			},
 			isImageInput: false,
 			inputImageUrl: '',
@@ -28,12 +30,34 @@ class App extends Component {
 		};
 	}
 
+  componentDidMount(){
+    fetch('http://localhost:3000')
+      .then(response => response.text())
+      .then(data => console.log(data))
+      // .catch(err => {
+      //   console.log("error when fetching: ", err);
+      // })
+  }
+
+
 	setRoute = (routeName) => {
 		this.setState({route: routeName});
 	}
 
-	setUser = (user) => {
-		this.setState({user: user});
+  setIsSignedIn = (isSignedInInput) => {
+    this.setState({isSignedIn: isSignedInInput})
+  }
+
+	updateUser = (inputUser) => {
+		this.setState({user: 
+      {
+        id: inputUser.id,
+        name: inputUser.name,
+        email: inputUser.email,
+        rank: inputUser.rank,
+        entries: inputUser.entries
+      }
+    });
 	}
 
 	setIsImageInput = (isImageInput) => {
@@ -152,29 +176,56 @@ class App extends Component {
 
 	}
 
+  Body = ({route}) => {
+    const {isSignedIn, user, isImageInput, inputImageUrl, imageUrl, doesImageUrlWork, faceBoxes} = this.state;
+    switch (route){
+      case 'home':
+        return (
+          <div>
+            { isSignedIn?
+              <Rank name={user.name} entries={user.entries}/>
+              :
+              <div></div>
+            }
+            <ImageLinkForm 
+              changeInputImageUrl = {this.changeInputImageUrl}  
+              clickDetectButton = {this.clickDetectButton} />
+            <div>
+              <ImageBox imageUrl={imageUrl} faceBoxes={faceBoxes}/>
+            </div>
+          </div>            
+        );
+      case 'signIn':
+        return (
+          <SignInForm 
+            setIsSignedIn={this.setIsSignedIn} 
+            updateUser={this.updateUser}
+            setRoute={this.setRoute} />            
+        );
+      case 'signUp':
+        return (
+          <SignUp 
+            setIsSignedIn={this.setIsSignedIn} 
+            updateUser={this.updateUser}
+            setRoute={this.setRoute} />            
+        );
+      default:
+        return null;        
+    }
+  }
 
 	render(){
-		const {route, isSignedIn, user, isImageInput, inputImageUrl, imageUrl, doesImageUrlWork, faceBoxes} = this.state;
+		const {route, isSignedIn, user, isImageInput, inputImageUrl, imageUrl, doesImageUrlWork, faceBoxes} = this.state; 
 		return (
 			<div className="maxWidth center">
-				<Nav setRoute={this.setRoute}/>
+				<Nav 
+          isSignedIn={this.state.isSignedIn} 
+          user={this.state.user}
+          setIsSignedIn = {this.setIsSignedIn} 
+          updateUser={this.updateUser}
+          setRoute={this.setRoute}/>
 				<hr className="NavSeparateLine"/>
-				{ 
-					route === 'home'?
-						<div>			
-							<Rank name={user.name} rank={user.rank}/>	
-							<ImageLinkForm 
-								changeInputImageUrl = {this.changeInputImageUrl}	
-								clickDetectButton = {this.clickDetectButton} />
-							<div>
-								<ImageBox imageUrl={imageUrl} faceBoxes={faceBoxes}/>
-							</div>
-						</div>
-					:
-					<SignInForm 
-						onIsSignedInChange={this.onIsSignedInChange} 
-						setUser={this.setUser} />
-				}
+				<this.Body route={this.state.route}/>
 			</div>
 		);
 	}
